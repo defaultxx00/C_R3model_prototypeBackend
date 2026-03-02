@@ -19,6 +19,7 @@ interface Aluno {
 interface Solicitacao {
   id: number;
   alunoId: number;
+  alunoNome: string;
   professorId: number;
   campoAlterado: string;
   valorAnterior: string;
@@ -44,18 +45,18 @@ export default function DashboardProfessor() {
   const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false);
   const [modalNotificacoesAberto, setModalNotificacoesAberto] = useState(false);
   const [alunoEditando, setAlunoEditando] = useState<Aluno | null>(null);
-  const [novoAluno, setNovoAluno] = useState({ nome: "", email: "", telefone: "", serie: "", cidade: "", biografia: "" });
+  const [novoAluno, setNovoAluno] = useState({ nome: "", email: "", telefone: "", serie: "", cidade: "", biografia: "", senha: "" });
   const [user, setUser] = useState<User | null>(null);
   const [notificacoesNaoLidas, setNotificacoesNaoLidas] = useState(0);
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const carregarDados = async () => {
+  const carregarDados = async (professorId: number = 1) => {
     const resAlunos = await fetch("/api/alunos?tipo=alunos");
     const dataAlunos = await resAlunos.json();
     setAlunos(dataAlunos);
 
-    const resSolicitacoes = await fetch("/api/alunos?tipo=solicitacoes&professorId=1");
+    const resSolicitacoes = await fetch(`/api/alunos?tipo=solicitacoes&professorId=${professorId}`);
     const dataSolicitacoes = await resSolicitacoes.json();
     setSolicitacoes(dataSolicitacoes);
     setNotificacoesNaoLidas(dataSolicitacoes.filter((s: Solicitacao) => s.status === "pendente").length);
@@ -78,7 +79,7 @@ export default function DashboardProfessor() {
     
     setUser(userData);
     setIsAuthenticated(true);
-    carregarDados();
+    carregarDados(userData.id);
   }, [router, isAuthenticated]);
 
   const handleLogout = () => {
@@ -130,7 +131,7 @@ export default function DashboardProfessor() {
     if (data.success) {
       setAlunos([...alunos, data.aluno]);
       setModalAberto(false);
-      setNovoAluno({ nome: "", email: "", telefone: "", serie: "", cidade: "", biografia: "" });
+      setNovoAluno({ nome: "", email: "", telefone: "", serie: "", cidade: "", biografia: "", senha: "" });
     }
   };
 
@@ -171,7 +172,7 @@ export default function DashboardProfessor() {
   const getStatusStyle = (status: string) => {
     switch (status) {
       case "ativo": return "bg-green-500/10 text-green-500 border-green-500/20 shadow-[0_0_10px_rgba(34,197,94,0.2)]";
-      case "inativo": return "bg-red-500/10 text-red-500 border-red-500/20";
+      case "inativo": return "bg-red-500/10 text-red-500 border-red-500/20 shadow-[0_0_10px_rgba(239,68,68,0.2)]";
       case "pendente": return "bg-yellow-500/10 text-yellow-500 border-yellow-500/20";
       default: return "bg-gray-500/10 text-gray-500";
     }
@@ -197,11 +198,11 @@ export default function DashboardProfessor() {
         <div className="p-8 flex flex-col items-center">
           <img src="https://www.barracred.com.br/wp-content/uploads/2023/08/barracred.png" alt="Logo" className="h-12 mb-4 drop-shadow-[0_0_10px_rgba(220,38,38,0.5)]" />
           <h2 className="text-sm font-black tracking-[0.3em] text-white">PROFESSOR</h2>
-          <div className="w-12 h-[2px] bg-red-600 mt-2 shadow-[0_0_10px_rgba(220,38,38,0.8)]"></div>
+          <div className="w-12 h-[2px] bg-green-600 mt-2 shadow-[0_0_10px_rgba(220,38,38,0.8)]"></div>
         </div>
 
         <nav className="flex-1 px-4 space-y-2">
-          <button className="w-full flex items-center gap-4 px-4 py-4 rounded-xl bg-red-600 text-white shadow-[0_0_20px_rgba(220,38,38,0.3)] font-bold transition-all">
+          <button className="w-full flex items-center gap-4 px-4 py-4 rounded-xl bg-green-600 text-white shadow-[0_0_20px_rgba(220,38,38,0.3)] font-bold transition-all">
             <i className="fas fa-users"></i> Gerenciar Alunos
           </button>
           <button onClick={() => setModalAberto(true)} className="w-full flex items-center gap-4 px-4 py-4 rounded-xl hover:bg-white/5 text-gray-400 hover:text-white transition-all">
@@ -213,7 +214,7 @@ export default function DashboardProfessor() {
           >
             <i className="fas fa-bell"></i> Notificações
             {notificacoesNaoLidas > 0 && (
-              <span className="absolute right-4 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">{notificacoesNaoLidas}</span>
+              <span className="absolute right-4 bg-green-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">{notificacoesNaoLidas}</span>
             )}
           </button>
           <Link href="/" className="flex items-center gap-4 px-4 py-4 rounded-xl hover:bg-white/5 text-gray-400 transition-all">
@@ -222,18 +223,18 @@ export default function DashboardProfessor() {
         </nav>
 
         <div className="p-6">
-          <button onClick={handleLogout} className="w-full py-3 rounded-xl border border-red-900/50 text-red-500 font-bold hover:bg-red-600 hover:text-white transition-all text-xs tracking-widest">
+          <button onClick={handleLogout} className="w-full py-3 rounded-xl border border-green-900/50 text-green-500 font-bold hover:bg-green-600 hover:text-white transition-all text-xs tracking-widest">
             LOGOUT SYSTEM
           </button>
         </div>
       </aside>
 
       <main className="flex-1 p-10 relative overflow-y-auto">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-600/5 blur-[150px] -z-10" />
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-green-600/5 blur-[150px] -z-10" />
 
         <header className="flex justify-between items-end mb-10">
           <div>
-            <h1 className="text-4xl font-black text-white tracking-tighter">Database <span className="text-red-600 uppercase text-2xl ml-2 tracking-widest font-light">Alunos</span></h1>
+            <h1 className="text-4xl font-black text-white tracking-tighter">Database <span className="text-green-600 uppercase text-2xl ml-2 tracking-widest font-light">Alunos</span></h1>
             <p className="text-gray-500 mt-2">Monitoramento de acessos e usuários ativos no Barracred Conecta.</p>
           </div>
           
@@ -242,26 +243,26 @@ export default function DashboardProfessor() {
               <span className="block text-2xl font-bold text-white">{alunos.length}</span>
               <span className="text-[10px] text-gray-500 uppercase tracking-tighter">Total Registrado</span>
             </div>
-            <div className="bg-red-6/10 border border-red-600/20 rounded-2xl px-6 py-3 text-center backdrop-blur-md">
-              <span className="block text-2xl font-bold text-red-500">{alunos.filter(a => a.status === 'ativo').length}</span>
-              <span className="text-[10px] text-red-400 uppercase tracking-tighter">Online agora</span>
+            <div className="bg-green-6/10 border border-green-600/20 rounded-2xl px-6 py-3 text-center backdrop-blur-md">
+              <span className="block text-2xl font-bold text-green-500">{alunos.filter(a => a.status === 'ativo').length}</span>
+              <span className="text-[10px] text-green-400 uppercase tracking-tighter">Online agora</span>
             </div>
           </div>
         </header>
 
         <div className="flex gap-4 mb-8">
           <div className="flex-1 relative group">
-            <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within:text-red-500 transition-colors"></i>
+            <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within:text-green-500 transition-colors"></i>
             <input 
               type="text" 
               placeholder="Pesquisar por nome ou e-mail..." 
-              className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 transition-all text-sm"
+              className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600 transition-all text-sm"
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
             />
           </div>
           <select 
-            className="bg-white/5 border border-white/10 rounded-2xl px-6 outline-none focus:border-red-600 transition-all text-sm text-gray-400"
+            className="bg-white/5 border border-white/10 rounded-2xl px-6 outline-none focus:border-green-600 transition-all text-sm text-gray-400"
             value={filtroStatus}
             onChange={(e) => setFiltroStatus(e.target.value)}
           >
@@ -284,14 +285,14 @@ export default function DashboardProfessor() {
             </thead>
             <tbody className="divide-y divide-white/5">
               {alunosFiltrados.map((aluno) => (
-                <tr key={aluno.id} className="hover:bg-red-600/5 transition-colors group">
+                <tr key={aluno.id} className="hover:bg-green-600/5 transition-colors group">
                   <td className="px-8 py-5">
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-600 to-red-900 flex items-center justify-center text-white font-bold shadow-lg shadow-red-900/20">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-600 to-green-900 flex items-center justify-center text-white font-bold shadow-lg shadow-green-900/20">
                         {aluno.nome.charAt(0)}
                       </div>
                       <div>
-                        <div className="text-sm font-bold text-white group-hover:text-red-500 transition-colors">{aluno.nome}</div>
+                        <div className="text-sm font-bold text-white group-hover:text-green-500 transition-colors">{aluno.nome}</div>
                         <div className="text-xs text-gray-500 font-mono">{aluno.email}</div>
                       </div>
                     </div>
@@ -306,18 +307,20 @@ export default function DashboardProfessor() {
                     </span>
                   </td>
                   <td className="px-8 py-5 text-right space-x-2">
-                    <button onClick={() => handleEditarAluno(aluno)} className="p-2.5 bg-white/5 rounded-xl hover:bg-white/10 text-gray-400 hover:text-white transition-all"><i className="fas fa-edit text-xs"></i></button>
+                    <button onClick={() => handleEditarAluno(aluno)} title="Editar aluno" className="p-2.5 bg-white/5 rounded-xl hover:bg-white/10 text-gray-400 hover:text-white transition-all"><i className="fas fa-user-edit text-xs"></i> <span className="text-[10px]">Editar</span></button>
                     <button 
                       onClick={() => handleMudarStatus(aluno.id, aluno.status === 'ativo' ? 'inativo' : 'ativo')}
-                      className="p-2.5 bg-white/5 rounded-xl hover:bg-red-600/20 text-gray-400 hover:text-red-500 transition-all"
+                      title={aluno.status === 'ativo' ? "Desativar aluno" : "Ativar aluno"}
+                      className="p-2.5 bg-white/5 rounded-xl hover:bg-green-600/20 text-gray-400 hover:text-green-500 transition-all"
                     >
-                      <i className={`fas ${aluno.status === 'ativo' ? 'fa-ban' : 'fa-check'} text-xs`}></i>
+                      <i className={`fas ${aluno.status === 'ativo' ? 'fa-ban' : 'fa-check'} text-xs`}></i> <span className="text-[10px]">{aluno.status === 'ativo' ? 'Desativar' : 'Ativar'}</span>
                     </button>
                     <button 
                       onClick={() => handleExcluirAluno(aluno.id)}
-                      className="p-2.5 bg-white/5 rounded-xl hover:bg-red-600/20 text-gray-400 hover:text-red-500 transition-all"
+                      title="Excluir aluno"
+                      className="p-2.5 bg-white/5 rounded-xl hover:bg-green-600/20 text-gray-400 hover:text-green-500 transition-all"
                     >
-                      <i className="fas fa-trash text-xs"></i>
+                      <i className="fas fa-trash-alt text-xs"></i> <span className="text-[10px]">Excluir</span>
                     </button>
                   </td>
                 </tr>
@@ -328,33 +331,37 @@ export default function DashboardProfessor() {
 
         {modalAberto && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-6 backdrop-blur-sm bg-black/60">
-            <div className="bg-[#0f0f0f] border border-red-600/30 w-full max-w-lg rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(220,38,38,0.15)] animate-in zoom-in-95 duration-200">
-              <div className="bg-red-600 px-8 py-6 flex justify-between items-center">
+            <div className="bg-[#0f0f0f] border border-green-600/30 w-full max-w-lg rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(220,38,38,0.15)] animate-in zoom-in-95 duration-200">
+              <div className="bg-green-600 px-8 py-6 flex justify-between items-center">
                 <h2 className="text-white font-black uppercase tracking-widest">New Entry / Aluno</h2>
                 <button onClick={() => setModalAberto(false)} className="text-white/60 hover:text-white"><i className="fas fa-times"></i></button>
               </div>
               <form onSubmit={handleCriarAluno} className="p-8 space-y-6">
                 <div className="space-y-2">
                   <label className="text-[10px] uppercase font-bold text-gray-500 tracking-widest">Full Name</label>
-                  <input type="text" className="w-full bg-black border border-white/10 rounded-xl p-4 outline-none focus:border-red-600 transition-all" placeholder="Nome do estudante" value={novoAluno.nome} onChange={e => setNovoAluno({...novoAluno, nome: e.target.value})} required />
+                  <input type="text" className="w-full bg-black border border-white/10 rounded-xl p-4 outline-none focus:border-green-600 transition-all" placeholder="Nome do estudante" value={novoAluno.nome} onChange={e => setNovoAluno({...novoAluno, nome: e.target.value})} required />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] uppercase font-bold text-gray-500 tracking-widest">Email Address</label>
-                  <input type="email" className="w-full bg-black border border-white/10 rounded-xl p-4 outline-none focus:border-red-600 transition-all" placeholder="exemplo@aluno.com" value={novoAluno.email} onChange={e => setNovoAluno({...novoAluno, email: e.target.value})} required />
+                  <label className="text-[10px] uppercase font-bold text-gray-500 tracking-widest">Email Address (Login)</label>
+                  <input type="email" className="w-full bg-black border border-white/10 rounded-xl p-4 outline-none focus:border-green-600 transition-all" placeholder="exemplo@aluno.com" value={novoAluno.email} onChange={e => setNovoAluno({...novoAluno, email: e.target.value})} required />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase font-bold text-gray-500 tracking-widest">Password</label>
+                  <input type="password" className="w-full bg-black border border-white/10 rounded-xl p-4 outline-none focus:border-green-600 transition-all" placeholder="Senha para acesso" value={novoAluno.senha} onChange={e => setNovoAluno({...novoAluno, senha: e.target.value})} required />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-[10px] uppercase font-bold text-gray-500 tracking-widest">Série</label>
-                    <input type="text" className="w-full bg-black border border-white/10 rounded-xl p-4 outline-none focus:border-red-600 transition-all" placeholder="2º Ano EM" value={novoAluno.serie} onChange={e => setNovoAluno({...novoAluno, serie: e.target.value})} required />
+                    <input type="text" className="w-full bg-black border border-white/10 rounded-xl p-4 outline-none focus:border-green-600 transition-all" placeholder="2º Ano EM" value={novoAluno.serie} onChange={e => setNovoAluno({...novoAluno, serie: e.target.value})} required />
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] uppercase font-bold text-gray-500 tracking-widest">Cidade</label>
-                    <input type="text" className="w-full bg-black border border-white/10 rounded-xl p-4 outline-none focus:border-red-600 transition-all" placeholder="Cidade - UF" value={novoAluno.cidade} onChange={e => setNovoAluno({...novoAluno, cidade: e.target.value})} required />
+                    <input type="text" className="w-full bg-black border border-white/10 rounded-xl p-4 outline-none focus:border-green-600 transition-all" placeholder="Cidade - UF" value={novoAluno.cidade} onChange={e => setNovoAluno({...novoAluno, cidade: e.target.value})} required />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4 pt-4">
                   <button type="button" onClick={() => setModalAberto(false)} className="py-4 rounded-xl text-gray-500 font-bold hover:bg-white/5 transition-all">ABORTAR</button>
-                  <button type="submit" className="bg-red-600 py-4 rounded-xl text-white font-bold shadow-lg shadow-red-600/20 hover:bg-red-700 transition-all">REGISTRAR</button>
+                  <button type="submit" className="bg-green-600 py-4 rounded-xl text-white font-bold shadow-lg shadow-green-600/20 hover:bg-green-700 transition-all">REGISTRAR</button>
                 </div>
               </form>
             </div>
@@ -363,37 +370,37 @@ export default function DashboardProfessor() {
 
         {modalEdicaoAberto && alunoEditando && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-6 backdrop-blur-sm bg-black/60">
-            <div className="bg-[#0f0f0f] border border-red-600/30 w-full max-w-lg rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(220,38,38,0.15)] animate-in zoom-in-95 duration-200">
-              <div className="bg-red-600 px-8 py-6 flex justify-between items-center">
+            <div className="bg-[#0f0f0f] border border-green-600/30 w-full max-w-lg rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(220,38,38,0.15)] animate-in zoom-in-95 duration-200">
+              <div className="bg-green-600 px-8 py-6 flex justify-between items-center">
                 <h2 className="text-white font-black uppercase tracking-widest">Editar Aluno</h2>
                 <button onClick={() => { setModalEdicaoAberto(false); setAlunoEditando(null); }} className="text-white/60 hover:text-white"><i className="fas fa-times"></i></button>
               </div>
               <form onSubmit={handleSalvarEdicao} className="p-8 space-y-6">
                 <div className="space-y-2">
                   <label className="text-[10px] uppercase font-bold text-gray-500 tracking-widest">Nome</label>
-                  <input type="text" className="w-full bg-black border border-white/10 rounded-xl p-4 outline-none focus:border-red-600 transition-all" value={alunoEditando.nome} onChange={e => setAlunoEditando({...alunoEditando, nome: e.target.value})} required />
+                  <input type="text" className="w-full bg-black border border-white/10 rounded-xl p-4 outline-none focus:border-green-600 transition-all" value={alunoEditando.nome} onChange={e => setAlunoEditando({...alunoEditando, nome: e.target.value})} required />
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] uppercase font-bold text-gray-500 tracking-widest">E-mail</label>
-                  <input type="email" className="w-full bg-black border border-white/10 rounded-xl p-4 outline-none focus:border-red-600 transition-all" value={alunoEditando.email} onChange={e => setAlunoEditando({...alunoEditando, email: e.target.value})} required />
+                  <input type="email" className="w-full bg-black border border-white/10 rounded-xl p-4 outline-none focus:border-green-600 transition-all" value={alunoEditando.email} onChange={e => setAlunoEditando({...alunoEditando, email: e.target.value})} required />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-[10px] uppercase font-bold text-gray-500 tracking-widest">Série</label>
-                    <input type="text" className="w-full bg-black border border-white/10 rounded-xl p-4 outline-none focus:border-red-600 transition-all" value={alunoEditando.serie} onChange={e => setAlunoEditando({...alunoEditando, serie: e.target.value})} required />
+                    <input type="text" className="w-full bg-black border border-white/10 rounded-xl p-4 outline-none focus:border-green-600 transition-all" value={alunoEditando.serie} onChange={e => setAlunoEditando({...alunoEditando, serie: e.target.value})} required />
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] uppercase font-bold text-gray-500 tracking-widest">Cidade</label>
-                    <input type="text" className="w-full bg-black border border-white/10 rounded-xl p-4 outline-none focus:border-red-600 transition-all" value={alunoEditando.cidade} onChange={e => setAlunoEditando({...alunoEditando, cidade: e.target.value})} required />
+                    <input type="text" className="w-full bg-black border border-white/10 rounded-xl p-4 outline-none focus:border-green-600 transition-all" value={alunoEditando.cidade} onChange={e => setAlunoEditando({...alunoEditando, cidade: e.target.value})} required />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] uppercase font-bold text-gray-500 tracking-widest">Biografia</label>
-                  <textarea className="w-full bg-black border border-white/10 rounded-xl p-4 outline-none focus:border-red-600 transition-all" rows={3} value={alunoEditando.biografia} onChange={e => setAlunoEditando({...alunoEditando, biografia: e.target.value})} />
+                  <textarea className="w-full bg-black border border-white/10 rounded-xl p-4 outline-none focus:border-green-600 transition-all" rows={3} value={alunoEditando.biografia} onChange={e => setAlunoEditando({...alunoEditando, biografia: e.target.value})} />
                 </div>
                 <div className="grid grid-cols-2 gap-4 pt-4">
                   <button type="button" onClick={() => { setModalEdicaoAberto(false); setAlunoEditando(null); }} className="py-4 rounded-xl text-gray-500 font-bold hover:bg-white/5 transition-all">CANCELAR</button>
-                  <button type="submit" className="bg-red-600 py-4 rounded-xl text-white font-bold shadow-lg shadow-red-600/20 hover:bg-red-700 transition-all">SALVAR</button>
+                  <button type="submit" className="bg-green-600 py-4 rounded-xl text-white font-bold shadow-lg shadow-green-600/20 hover:bg-green-700 transition-all">SALVAR</button>
                 </div>
               </form>
             </div>
@@ -406,10 +413,10 @@ export default function DashboardProfessor() {
             onClick={() => setModalNotificacoesAberto(false)}
           >
             <div 
-              className="bg-[#0f0f0f] border border-red-600/30 w-full max-w-2xl rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(220,38,38,0.15)] animate-in zoom-in-95 duration-200 max-h-[80vh] overflow-y-auto"
+              className="bg-[#0f0f0f] border border-green-600/30 w-full max-w-2xl rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(220,38,38,0.15)] animate-in zoom-in-95 duration-200 max-h-[80vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="bg-red-600 px-8 py-6 flex justify-between items-center sticky top-0">
+              <div className="bg-green-600 px-8 py-6 flex justify-between items-center sticky top-0">
                 <h2 className="text-white font-black uppercase tracking-widest">Solicitações de Alteração</h2>
                 <button onClick={() => setModalNotificacoesAberto(false)} className="text-white/60 hover:text-white text-xl">
                   <i className="fas fa-times"></i>
@@ -423,6 +430,10 @@ export default function DashboardProfessor() {
                     <div key={sol.id} className="bg-white/5 border border-white/10 rounded-xl p-6">
                       <div className="flex justify-between items-start mb-4">
                         <div>
+                          <div className="flex items-center gap-2 mb-2">
+                            <i className="fas fa-user-graduate text-green-500"></i>
+                            <span className="text-white font-bold">{sol.alunoNome}</span>
+                          </div>
                           <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase border ${getStatusStyle(sol.status)}`}>
                             {sol.status}
                           </span>
@@ -440,8 +451,8 @@ export default function DashboardProfessor() {
                           <p className="text-[10px] text-gray-500 uppercase">Valor Anterior</p>
                           <p className="text-white text-sm">{sol.valorAnterior}</p>
                         </div>
-                        <div className="bg-red-600/10 p-3 rounded-lg border border-red-600/30">
-                          <p className="text-[10px] text-red-400 uppercase">Novo Valor</p>
+                        <div className="bg-green-600/10 p-3 rounded-lg border border-green-600/30">
+                          <p className="text-[10px] text-green-400 uppercase">Novo Valor</p>
                           <p className="text-white text-sm">{sol.valorNovo}</p>
                         </div>
                       </div>
@@ -456,7 +467,7 @@ export default function DashboardProfessor() {
                           </button>
                           <button 
                             onClick={() => handleResponderSolicitacao(sol.id, "rejeitada", "Alteração rejeitada pelo professor")}
-                            className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-bold transition-all"
+                            className="flex-1 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-bold transition-all"
                           >
                             REJEITAR
                           </button>

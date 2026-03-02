@@ -9,9 +9,9 @@ import type { NextRequest } from "next/server";
  * 1. Redireciona usuários não autenticados para /login
  * 2. Usuários autenticados são redirecionados para sua área correta
  * 3. Protege rotas de dashboard (aluno e professor)
- * 4. Evita que alunoaccess área do professor e vice-versa
+ * 4. Evita que aluno access área do professor e vice-versa
  * 
- * Rotas protegidas:
+ * Rotas protegida: 
  * - /dashboard/* (requer autenticação)
  * - /login (redireciona se já estiver logado)
  * - / (página inicial - redireciona se logado)

@@ -57,16 +57,16 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4 relative overflow-hidden">
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-red-600/20 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-red-900/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-green-600/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-green-900/10 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="w-full max-w-md bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden relative z-10">
-        <div className="h-1 w-full bg-gradient-to-r from-transparent via-red-600 to-transparent shadow-[0_0_15px_rgba(220,38,38,0.8)]" />
+        <div className="h-1 w-full bg-gradient-to-r from-transparent via-green-600 to-transparent shadow-[0_0_15px_rgba(220,38,38,0.8)]" />
 
         <div className="p-8">
           <header className="flex flex-col items-center mb-8">
             <h1 className="text-2xl font-bold text-white tracking-tight">
-              Barracred <span className="text-red-500">Conecta</span>
+              Barracred <span className="text-green-500">Conecta</span>
             </h1>
             <p className="text-gray-400 text-sm mt-1 uppercase tracking-widest">Área Restrita</p>
           </header>
@@ -77,7 +77,7 @@ export default function Login() {
               onClick={() => setTipo("aluno")}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg transition-all duration-300 font-medium ${
                 tipo === "aluno" 
-                ? "bg-red-600 text-white shadow-[0_0_20px_rgba(220,38,38,0.4)]" 
+                ? "bg-green-600 text-white shadow-[0_0_20px_rgba(220,38,38,0.4)]" 
                 : "text-gray-400 hover:text-white hover:bg-white/5"
               }`}
             >
@@ -88,7 +88,7 @@ export default function Login() {
               onClick={() => setTipo("professor")}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg transition-all duration-300 font-medium ${
                 tipo === "professor" 
-                ? "bg-red-600 text-white shadow-[0_0_20px_rgba(220,38,38,0.4)]" 
+                ? "bg-green-600 text-white shadow-[0_0_20px_rgba(220,38,38,0.4)]" 
                 : "text-gray-400 hover:text-white hover:bg-white/5"
               }`}
             >
@@ -104,7 +104,7 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={tipo === "aluno" ? "joao@aluno.com" : "professor@barracred.com"}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-red-600/50 focus:border-red-600 transition-all duration-300"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-green-600/50 focus:border-green-600 transition-all duration-300"
                 required
               />
             </div>
@@ -116,13 +116,13 @@ export default function Login() {
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-red-600/50 focus:border-red-600 transition-all duration-300"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-green-600/50 focus:border-green-600 transition-all duration-300"
                 required
               />
             </div>
 
             {erro && (
-              <div className="p-3 bg-red-600/10 border border-red-600/30 rounded-xl text-red-500 text-sm text-center">
+              <div className="p-3 bg-green-600/10 border border-green-600/30 rounded-xl text-green-500 text-sm text-center">
                 {erro}
               </div>
             )}
@@ -130,7 +130,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-red-600 hover:bg-red-700 disabled:bg-red-800 text-white font-bold py-3.5 rounded-xl shadow-[0_0_25px_rgba(220,38,38,0.3)] hover:shadow-[0_0_35px_rgba(220,38,38,0.5)] transition-all duration-300 transform active:scale-[0.98] disabled:cursor-not-allowed"
+              className="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-800 text-white font-bold py-3.5 rounded-xl shadow-[0_0_25px_rgba(220,38,38,0.3)] hover:shadow-[0_0_35px_rgba(220,38,38,0.5)] transition-all duration-300 transform active:scale-[0.98] disabled:cursor-not-allowed"
             >
               {loading ? "ENTRANDO..." : "ENTRAR NO SISTEMA"}
             </button>
@@ -138,12 +138,11 @@ export default function Login() {
 
           <footer className="mt-8 text-center">
             <p className="text-xs text-gray-500">
-              Dev: dev@dev / dev<br/>
-              Demo: aluno@barracred.com / professor@barracred.com<br/>
-              Senha: 123456
+              Professores: dev1@dev / dev | dev2@dev / dev<br/>
+              Alunos: aluno1@bcred.com / 123 | aluno2@bcred.com / 123
             </p>
 
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/44UaY-AN6ho?si=Z9tm1_HFYrTkS25r" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/44UaY-AN6ho?si=Z9tm1_HFYrTkS25r" title="YouTube video player" style={{ border: 0 }} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
             </footer>
         </div>
       </div>
